@@ -1,0 +1,267 @@
+body{
+  height: 100vh;
+  overflow: hidden;      
+  font-family:Arial, sans-serif           
+} 
+.Home{
+  height: 90vh;
+}
+.header{
+  height: 10vh;
+}
+.App {
+  text-align: center;
+}
+.dataContainer{
+  height: 100%;
+  border-radius: 0px;
+  padding: 5px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+}
+.dataContainerHeader{
+  padding: 5px;
+}
+.dataContainerChild{
+  background-color: rgb(238, 238, 238);
+  padding: 2px;
+  border-radius: 10px;
+  margin: 5px;
+}
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+.card{
+  height: 80%;
+  overflow-y: auto;
+}
+
+.componentbackground{
+  background-color: rgb(238,238,238);
+}
+.createPlan{
+  border-left: 0.5px solid  rgb(182, 182, 182) ;
+  
+}
+.sidebarbutton{
+  cursor: pointer;
+  padding: 7px;
+  color: black;
+  display: flex;
+  font-size: small;
+}
+.sidebarbutton:hover{
+
+  border-radius: 5px;
+  background-color: #2fbbe6; /* Light gray background on hover */
+ 
+  color: rgb(255, 255, 255);
+}
+
+.row{
+  cursor: pointer;
+}
+/* Row styling */
+tr {
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+/* Hover effect */
+tbody tr:hover {
+  background-color: #e5e7eb; /* Light gray background on hover */
+  transform: translateY(-0.3px); /* Slight lift effect */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Shadow to create pressed look */
+  color: rgb(2, 2, 2);
+}
+
+
+
+.edit{
+  color: rgb(2, 2, 2);
+  width: 15px;
+  height: 15px;
+  padding: 2px;
+}
+.edit:hover{  
+  border-radius: 5px;
+  background-color: rgb(255, 255, 255);
+
+}
+.delete{
+  color: red;
+  width: 15px;
+  height: 15px;
+  padding: 2px;
+}
+.delete:hover{
+  border-radius: 5px;
+  background-color: rgb(255, 255, 255);
+
+}
+
+td{
+  font-weight: 500;
+}
+::-webkit-scrollbar {
+  width: 2px;
+
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f7f7f7;
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb {
+  background: #8d0000;
+  border-radius: 5px;
+  height: 10px;
+  
+}
+
+
+.card p{
+  margin: auto;
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    align-items: center;
+}
+.loaderParent{
+  display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+.loader {
+  width: fit-content;
+  font-size: 17px;
+  font-family: monospace;
+  line-height: 1.4;
+  font-weight: bold;
+  background: 
+    linear-gradient(#000 0 0) left ,
+    linear-gradient(#000 0 0) right;
+  background-repeat: no-repeat; 
+  border-right: 5px solid #0000;
+  border-left: 5px solid #0000;
+  background-origin: border-box;
+  position: relative;
+  animation: l9-0 2s infinite;
+  
+}
+
+.loader::before {
+  content: "Loading...";
+ 
+}
+
+
+.loader::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 22px;
+  height: 60px;
+  background: 
+   linear-gradient(90deg,#000 4px,#0000 0 calc(100% - 4px),#000 0) bottom            /22px 20px,
+   linear-gradient(90deg,red  4px,#0000 0 calc(100% - 4px),red  0) bottom 10px left 0/22px 6px,
+   linear-gradient(#000 0 0) bottom 3px left 0  /22px 8px,
+   linear-gradient(#000 0 0) bottom 0   left 50%/8px  16px;
+ background-repeat: no-repeat;
+ animation: l9-1 2s infinite;
+}
+@keyframes l9-0{
+  0%,25%    {background-size: 50% 100%}
+  25.1%,75% {background-size: 0 0,50% 100%}
+  75.1%,100%{background-size: 0 0,0 0}
+}
+@keyframes l9-1{
+  25%   { background-position:bottom, bottom 54px left 0,bottom 3px left 0,bottom 0 left 50%;left:0}
+  25.1% { background-position:bottom, bottom 10px left 0,bottom 3px left 0,bottom 0 left 50%;left:0}
+  50%   { background-position:bottom, bottom 10px left 0,bottom 3px left 0,bottom 0 left 50%;left:calc(100% - 22px)}
+  75%   { background-position:bottom, bottom 54px left 0,bottom 3px left 0,bottom 0 left 50%;left:calc(100% - 22px)}
+  75.1% { background-position:bottom, bottom 10px left 0,bottom 3px left 0,bottom 0 left 50%;left:calc(100% - 22px)}
+}
+.modal{
+  width: 50%;
+
+}
+
+.sortbtn :hover{
+ background-color: #b4f36d;
+ color: rgb(255, 255, 255);
+}
+.sortbtn button{
+  width: 100%;
+}
+.active{
+  background-color: #08566e;
+  color: rgb(255, 255, 255);
+}
+.active:hover{
+  background-color: #08566e;
+  color: rgb(255, 255, 255);
+}
+.active svg{
+  color: rgb(255, 255, 255);
+}
+.sortIcon{
+  color: white;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+}
+.sortIcon.sortIconCross{
+  color: red;
+}
+.main{
+  padding: 0px;
+}
+tr{
+  cursor: pointer;
+}
+
+.toggleButtonInActive{
+ background-color: grey;
+}
+
+.topicToggle{
+ 
+  padding: 0px;
+}
+
+.topicToggle > div{
+ 
+  padding: 0px;
+  box-shadow: none;
+ 
+}
+.topicToggle > div > p{
+ color: black;
+}
