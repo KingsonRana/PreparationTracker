@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PreparationTracker.DTO.RequestDTO;
 using PreparationTracker.DTO.ResponseDTO;
 using PreparationTracker.Services;
@@ -8,75 +9,115 @@ using System.Threading.Tasks;
 
 namespace PreparationTracker.Controllers
 {
+    [Authorize]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("/[controller]")]
     public class TopicManagementController : ControllerBase
     {
         private readonly TopicProblemService _topicService;
-
+        
         public TopicManagementController(TopicProblemService topicService)
         {
             _topicService = topicService;
         }
 
         // GET: api/TopicManagement/topics/{examId}
-        [HttpGet("topics/{examId}")]
-        public async Task<IActionResult> GetTopics(Guid examId)
+        [HttpGet("{examId}/Topic")]
+        public async Task<ActionResult<IEnumerable<TopicResponseDto>>> GetTopics(Guid examId)
         {
-            var topics = await _topicService.GetTopicsAsync(examId);
-            return Ok(topics);
+            try
+            {
+                var topics = await _topicService.GetTopicsAsync(examId);
+                return Ok(topics);
+            }
+            catch (Exception ex) {
+                throw new Exception("Error occured while fetching topic");
+            }
         }
 
         // GET: api/TopicManagement/subtopics/{parentId}
-        [HttpGet("subtopics/{parentId}")]
+        [HttpGet("{parentId}/SubTopic")]
         public async Task<IActionResult> GetSubTopics(Guid parentId)
         {
-            var subTopics = await _topicService.GetSubTopicsAsync(parentId);
-            return Ok(subTopics);
+            try
+            {
+                var subTopics = await _topicService.GetSubTopicsAsync(parentId);
+                return Ok(subTopics);
+            }
+            catch (Exception ex) {
+                throw new Exception("Error occured while fetching subtopic");
+            }
         }
 
-        // POST: api/TopicManagement/topics/{examId}
-        [HttpPost("topics/{examId}")]
-        public async Task<IActionResult> CreateTopic(Guid examId, [FromBody] TopicRequestDto requestDto)
+        // POST: api/TopicManagement/{examId}/topics
+        [HttpPost("{examId}/Topic")]
+        public async Task<ActionResult<TopicResponseDto>> CreateTopic(Guid examId, [FromBody] TopicRequestDto requestDto)
         {
-            var createdTopic = await _topicService.CreateTopicAsync(examId, requestDto);
-            return CreatedAtAction(nameof(GetTopics), new { examId = examId }, createdTopic);
+            try
+            {
+                var createdTopic = await _topicService.CreateTopicAsync(examId, requestDto);
+                return Ok(createdTopic);
+            }
+            catch (Exception ex) {
+                throw new Exception("Error occured while creating topic");
+            }
+            
         }
 
         // POST: api/TopicManagement/subtopics/{parentId}/{examId}
-        [HttpPost("subtopics/{parentId}/{examId}")]
-        public async Task<IActionResult> CreateSubTopic(Guid parentId, Guid examId, [FromBody] TopicRequestDto requestDto)
+        [HttpPost("{parentId}/{examId}/Subtopics")]
+        public async Task<ActionResult<TopicResponseDto>> CreateSubTopic(Guid parentId, Guid examId, [FromBody] TopicRequestDto requestDto)
         {
-            var createdSubTopic = await _topicService.CreateSubTopicAsync(parentId, examId, requestDto);
-            return CreatedAtAction(nameof(GetSubTopics), new { parentId = parentId }, createdSubTopic);
+            try
+            {
+                var createdSubTopic = await _topicService.CreateSubTopicAsync(parentId, examId, requestDto);
+                return Ok(createdSubTopic);
+            }
+            catch (Exception ex) {
+                throw new Exception("Error occured while creating subtopic");
+            }
+           
         }
 
         // PUT: api/TopicManagement/topics/{id}
-        [HttpPut("topics/{id}")]
+        [HttpPut("Topics/{id}")]
         public async Task<IActionResult> UpdateTopic(Guid id, [FromBody] TopicRequestDto requestDto)
         {
-            var updatedTopic = await _topicService.UpdateTopicAsync(id, requestDto);
-            return Ok(updatedTopic);
+            try
+            {
+                var updatedTopic = await _topicService.UpdateTopicAsync(id, requestDto);
+                return Ok(updatedTopic);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error while updating topic");
+            }
         }
 
         // DELETE: api/TopicManagement/topics/{id}
-        [HttpDelete("topics/{id}")]
+        [HttpDelete("Topics/{id}")]
         public async Task<IActionResult> DeleteTopic(Guid id)
         {
-            await _topicService.DeleteTopicAsync(id);
-            return NoContent();
+            try
+            {
+                await _topicService.DeleteTopicAsync(id);
+                return NoContent();
+            }
+            catch (Exception ex) {
+                throw new Exception("Error while Deleting topic");
+            }
         }
 
-        // GET: api/TopicManagement/problems/{topicId}
-        [HttpGet("problems/{topicId}")]
+        // GET: api/TopicManagement/{topicId}/problems
+        [HttpGet("{topicId}/Problems")]
         public async Task<IActionResult> GetProblems(Guid topicId)
         {
             var problems = await _topicService.GetProblemsAsync(topicId);
             return Ok(problems);
         }
 
-        // POST: api/TopicManagement/problems/{topicId}
-        [HttpPost("problems/{topicId}")]
+        // POST: api/TopicManagement/{topicId}/problems
+        [HttpPost("{topicId}/Problems")]
         public async Task<IActionResult> AddProblem(Guid topicId, [FromBody] ProblemsRequestDto request)
         {
             var createdProblem = await _topicService.AddProblemAsync(topicId, request);
@@ -84,7 +125,7 @@ namespace PreparationTracker.Controllers
         }
 
         // PUT: api/TopicManagement/problems/{id}
-        [HttpPut("problems/{id}")]
+        [HttpPut("Problems/{id}")]
         public async Task<IActionResult> UpdateProblem(Guid id, [FromBody] ProblemsRequestDto request)
         {
             var updatedProblem = await _topicService.UpdateProblemAsync(id, request);
@@ -92,7 +133,7 @@ namespace PreparationTracker.Controllers
         }
 
         // DELETE: api/TopicManagement/problems/{id}
-        [HttpDelete("problems/{id}")]
+        [HttpDelete("Problems/{id}")]
         public async Task<IActionResult> DeleteProblem(Guid id)
         {
             await _topicService.DeleteProblemAsync(id);
