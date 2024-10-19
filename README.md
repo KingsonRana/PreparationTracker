@@ -1,4 +1,3 @@
-PreparationTracker
 PreparationTracker is a comprehensive tool designed to help users track their exam preparation journey. It allows users to manage their study plans by adding exams, topics, and subtopics, and keeps track of questions they practice for each topic. Future enhancements will include social features such as adding friends and sharing preparation progress.
 
 Features
