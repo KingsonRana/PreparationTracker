@@ -30,12 +30,16 @@ namespace PreparationTracker.Controllers
                 var topics = await _topicService.GetTopicsAsync(examId);
                 return Ok(topics);
             }
-            catch (Exception ex) {
-                throw new Exception("Error occured while fetching topic");
+            catch (Exception e) {
+                return StatusCode(500, new
+                {
+                    status = "error",
+                    message = e.Message
+                });
             }
         }
 
-        // GET: api/TopicManagement/subtopics/{parentId}
+        // GET: api/TopicManagement/{parentId}/subTopic
         [HttpGet("{parentId}/SubTopic")]
         public async Task<IActionResult> GetSubTopics(Guid parentId)
         {
@@ -44,8 +48,12 @@ namespace PreparationTracker.Controllers
                 var subTopics = await _topicService.GetSubTopicsAsync(parentId);
                 return Ok(subTopics);
             }
-            catch (Exception ex) {
-                throw new Exception("Error occured while fetching subtopic");
+            catch (Exception e) {
+                return StatusCode(500, new
+                {
+                    status = "error",
+                    message = e.Message
+                });
             }
         }
 
@@ -58,8 +66,12 @@ namespace PreparationTracker.Controllers
                 var createdTopic = await _topicService.CreateTopicAsync(examId, requestDto);
                 return Ok(createdTopic);
             }
-            catch (Exception ex) {
-                throw new Exception("Error occured while creating topic");
+            catch (Exception e) {
+                return StatusCode(500, new
+                {
+                    status = "error",
+                    message = e.Message
+                });
             }
             
         }
@@ -73,8 +85,12 @@ namespace PreparationTracker.Controllers
                 var createdSubTopic = await _topicService.CreateSubTopicAsync(parentId, examId, requestDto);
                 return Ok(createdSubTopic);
             }
-            catch (Exception ex) {
-                throw new Exception("Error occured while creating subtopic");
+            catch (Exception e) {
+                return StatusCode(500, new
+                {
+                    status = "error",
+                    message = e.Message
+                });
             }
            
         }
@@ -88,9 +104,13 @@ namespace PreparationTracker.Controllers
                 var updatedTopic = await _topicService.UpdateTopicAsync(id, requestDto);
                 return Ok(updatedTopic);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                throw new Exception("Error while updating topic");
+                return StatusCode(500, new
+                {
+                    status = "error",
+                    message = e.Message
+                });
             }
         }
 
@@ -103,8 +123,12 @@ namespace PreparationTracker.Controllers
                 await _topicService.DeleteTopicAsync(id);
                 return NoContent();
             }
-            catch (Exception ex) {
-                throw new Exception("Error while Deleting topic");
+            catch (Exception e) {
+                return StatusCode(500, new
+                {
+                    status = "error",
+                    message = e.Message
+                });
             }
         }
 

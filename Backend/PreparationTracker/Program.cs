@@ -21,6 +21,8 @@ builder.Services.AddScoped<PasswordHasher>();
 builder.Services.AddScoped<ExamServices>();
 builder.Services.AddScoped<TopicProblemService>();
 builder.Services.AddScoped<ExamUtilities>();
+builder.Services.AddScoped<UserUtilities>();
+builder.Services.AddScoped<TopicUtility>();
 
 builder.Services.AddCors(options =>
 {

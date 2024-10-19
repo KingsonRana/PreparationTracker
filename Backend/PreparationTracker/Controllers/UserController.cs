@@ -30,12 +30,17 @@ namespace PreparationTracker.Controllers
             try
             {
                 await _userServices.RegisterUserAsync(user);
+                return Ok("User added successfully");
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, new
+                {
+                    status = "error",
+                    message = e.Message
+                });
             }
-            return Ok("User added successfully");
+           
         }
 
         [HttpGet("/GetUserByEmail")]
@@ -46,9 +51,13 @@ namespace PreparationTracker.Controllers
                 var user = await _userServices.GetUserByEmail(userDetail.Email, userDetail.Password);
                 return Ok(user);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, new
+                {
+                    status = "error",
+                    message = e.Message
+                });
             }
         }
         [Authorize]
@@ -60,9 +69,13 @@ namespace PreparationTracker.Controllers
                 var userDetail = await _userServices.GetUserDetail(userId);
                 return Ok(userDetail);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, new
+                {
+                    status = "error",
+                    message = e.Message
+                });
             }
         }
 
@@ -75,9 +88,13 @@ namespace PreparationTracker.Controllers
                 await _userServices.UpdateUserAsync(userId, request);
                 return Ok("User updated successfully");
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, new
+                {
+                    status = "error",
+                    message = e.Message
+                });
             }
         }
         [Authorize]
@@ -89,9 +106,13 @@ namespace PreparationTracker.Controllers
                 await _userServices.DeleteUserAsync(userId);
                 return Ok("User deleted successfully");
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, new
+                {
+                    status = "error",
+                    message = e.Message
+                });
             }
         }
     }

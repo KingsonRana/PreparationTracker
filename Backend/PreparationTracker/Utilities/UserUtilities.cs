@@ -1,10 +1,17 @@
-﻿using PreparationTracker.DTO.RequestDTO;
+﻿using Microsoft.EntityFrameworkCore;
+using PreparationTracker.Data;
+using PreparationTracker.DTO.RequestDTO;
 using System.Text.RegularExpressions;
 
 namespace PreparationTracker.Utilities
 {
-    public static class UserUtilities
+    public class UserUtilities
     {
+        private readonly AppDbContext _context;
+        public UserUtilities(AppDbContext context)
+        {
+            _context = context;
+        }
         public static bool verifyRequiredFields(UserSignupRequestDto user)
         {
             if (user == null)
@@ -64,6 +71,14 @@ namespace PreparationTracker.Utilities
             // Example pattern for US phone number validation (adjust as necessary)
             var phonePattern = @"^\+?[1-9]\d{1,14}$"; // E.164 format
             return Regex.IsMatch(phone, phonePattern);
+        }
+        public async Task VerifyUserExists(Guid userId)
+        {
+            var exists = await _context.Users.AnyAsync(e => e.UserId == userId);
+            if (!exists)
+            {
+                throw new Exception("User not found");
+            }
         }
     }
 }

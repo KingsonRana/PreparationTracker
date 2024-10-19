@@ -34,94 +34,136 @@ namespace PreparationTracker.Services
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
         private readonly ExamUtilities _examUtility;
+        private readonly TopicUtility _topicUtility;
 
-        public TopicProblemService(AppDbContext context, IMapper mapper, ExamUtilities examUtilities)
+        public TopicProblemService(AppDbContext context, IMapper mapper, ExamUtilities examUtilities, TopicUtility topicUtility)
         {
             _context = context;
             _mapper = mapper;
             _examUtility = examUtilities;
+            _topicUtility = topicUtility;
         }
 
         public async Task<IEnumerable<TopicResponseDto>> GetTopicsAsync(Guid examId)
         {
-            await _examUtility.VerifyExamExistsAsync(examId);
-            var topics = await _context.Topics
-                .Where(t => t.ExamId == examId && t.ParentId == null)
-                .OrderBy(topic => topic.Id)
-                .ToListAsync();
+            try
+            {
+               await _examUtility.VerifyExamExistsAsync(examId);
+                var topics = await _context.Topics
+               .Where(t => t.ExamId == examId && t.ParentId == null)
+               .OrderBy(topic => topic.Id)
+               .ToListAsync();
 
-            return _mapper.Map<IEnumerable<TopicResponseDto>>(topics);
+                return _mapper.Map<IEnumerable<TopicResponseDto>>(topics);
+
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+           
         }
 
         public async Task<IEnumerable<TopicResponseDto>> GetSubTopicsAsync(Guid parentId)
         {
-            var topic = await _context.Topics.Include(t => t.SubTopics).FirstOrDefaultAsync(t => t.Guid == parentId);
-            return _mapper.Map<IEnumerable<TopicResponseDto>>(topic?.SubTopics);
+            try
+            {
+                await _topicUtility.VerifyTopicExists(parentId);
+                var topic = await _context.Topics.Include(t => t.SubTopics).FirstOrDefaultAsync(t => t.Guid == parentId);
+                return _mapper.Map<IEnumerable<TopicResponseDto>>(topic?.SubTopics);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        
         }
 
         public async Task<TopicResponseDto> CreateTopicAsync(Guid examId, TopicRequestDto requestDto)
         {
-            await _examUtility.VerifyExamExistsAsync(examId);
+            try
+            {
+                await _examUtility.VerifyExamExistsAsync(examId);
+                var topic = _mapper.Map<Topic>(requestDto);
+                var maxId = await _context.Topics.OrderByDescending(t => t.Id).Select(t => t.Id).FirstOrDefaultAsync();
+                topic.Id = maxId + 1;
+                topic.ExamId = examId;
+                await _context.Topics.AddAsync(topic);
+                await _context.SaveChangesAsync();
 
-            var topic = _mapper.Map<Topic>(requestDto);
-            var maxId = await _context.Topics.OrderByDescending(t => t.Id).Select(t => t.Id).FirstOrDefaultAsync();
-            topic.Id = maxId + 1;
-            topic.ExamId = examId;
-            await _context.Topics.AddAsync(topic);
-            await _context.SaveChangesAsync();
-
-            return _mapper.Map<TopicResponseDto>(topic);
+                return _mapper.Map<TopicResponseDto>(topic);
+            }catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
 
         public async Task<TopicResponseDto> CreateSubTopicAsync(Guid parentId, Guid examId, TopicRequestDto requestDto)
         {
-            await _examUtility.VerifyExamExistsAsync(examId);
+            try
+            {
+                await _examUtility.VerifyExamExistsAsync(examId);
+                await _topicUtility.VerifyTopicExists(parentId);
+                var topic = _mapper.Map<Topic>(requestDto);
+                var maxId = await _context.Topics.OrderByDescending(t => t.Id).Select(t => t.Id).FirstOrDefaultAsync();
+                topic.Id = maxId + 1;
+                topic.ParentId = parentId;
+                topic.ExamId = examId;
+                await _context.Topics.AddAsync(topic);
+                await _context.SaveChangesAsync();
 
-            var topic = _mapper.Map<Topic>(requestDto);
-            var maxId = await _context.Topics.OrderByDescending(t => t.Id).Select(t => t.Id).FirstOrDefaultAsync();
-            topic.Id = maxId + 1;
-            topic.ParentId = parentId;
-            topic.ExamId = examId;
-            await _context.Topics.AddAsync(topic);
-            await _context.SaveChangesAsync();
-
-            return _mapper.Map<TopicResponseDto>(topic);
+                return _mapper.Map<TopicResponseDto>(topic);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+           
         }
 
         public async Task<TopicResponseDto> UpdateTopicAsync(Guid id, TopicRequestDto requestDto)
         {
-            var existingTopic = await _context.Topics.FirstOrDefaultAsync(t => t.Guid == id);
-            if (existingTopic == null)
+            try
             {
-                throw new Exception("Topic not found");
+                await _topicUtility.VerifyTopicExists(id);
+                var existingTopic = await _context.Topics.FirstOrDefaultAsync(t => t.Guid == id);
+                _mapper.Map(requestDto, existingTopic);
+                existingTopic.UpdatedOn = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
+
+                return _mapper.Map<TopicResponseDto>(existingTopic);
+            }catch (Exception e)
+            {
+                throw new Exception(e.Message);
             }
-
-            _mapper.Map(requestDto, existingTopic);
-            existingTopic.UpdatedOn = DateTime.UtcNow;
-            await _context.SaveChangesAsync();
-
-            return _mapper.Map<TopicResponseDto>(existingTopic);
         }
 
         public async Task DeleteTopicAsync(Guid id)
         {
-            var topic = await _context.Topics.Include(t => t.SubTopics).Include(t => t.Problems).FirstOrDefaultAsync(t => t.Guid == id);
-            if (topic == null) throw new Exception("Topic not found");
-
-            async Task DeleteSubTopics(IEnumerable<Topic> subTopics)
+            try
             {
-                foreach (var subTopic in subTopics.ToList())
-                {
-                    var subSubTopics = await _context.Topics.Where(t => t.ParentId == subTopic.Guid).ToListAsync();
-                    await DeleteSubTopics(subSubTopics);
-                    _context.Topics.Remove(subTopic);
-                }
-            }
+                await _topicUtility.VerifyTopicExists(id);
+                var topic = await _context.Topics.Include(t => t.SubTopics).Include(t => t.Problems).FirstOrDefaultAsync(t => t.Guid == id);
+                if (topic == null) throw new Exception("Topic not found");
 
-            await DeleteSubTopics(topic.SubTopics);
-            _context.Problems.RemoveRange(topic.Problems);
-            _context.Topics.Remove(topic);
-            await _context.SaveChangesAsync();
+                async Task DeleteSubTopics(IEnumerable<Topic> subTopics)
+                {
+                    foreach (var subTopic in subTopics.ToList())
+                    {
+                        var subSubTopics = await _context.Topics.Where(t => t.ParentId == subTopic.Guid).ToListAsync();
+                        await DeleteSubTopics(subSubTopics);
+                        _context.Topics.Remove(subTopic);
+                    }
+                }
+
+                await DeleteSubTopics(topic.SubTopics);
+                _context.Problems.RemoveRange(topic.Problems);
+                _context.Topics.Remove(topic);
+                await _context.SaveChangesAsync();
+            }catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
 
         public async Task<IEnumerable<ProblemsResponseDto>> GetProblemsAsync(Guid id)

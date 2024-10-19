@@ -36,22 +36,36 @@ namespace PreparationTracker.Controllers
                 var examResponseDto = await _examServices.CreateExam(userId, examRequestDto);
                 return Ok(examResponseDto);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, new
+                {
+                    status = "error",
+                    message = e.Message
+                });
             }
         }
 
         [HttpGet("getExams/{userId:guid}")]
         public async Task<ActionResult<IEnumerable<ExamResponseDto>>> GetExams(Guid userId)
         {
-            var exams = await _examServices.GetExamsByUserId(userId);
-            if (exams == null)
+            try
             {
-                return NotFound();
-            }
+                var exams = await _examServices.GetExamsByUserId(userId);
+                if (exams == null)
+                {
+                    return NotFound();
+                }
 
-            return Ok(exams);
+                return Ok(exams);
+            }catch (Exception e)
+            {
+                return StatusCode(500, new
+                {
+                    status = "error",
+                    message = e.Message
+                });
+            }
         }
 
         [HttpPut("updateExam/{examId:guid}")]
@@ -67,9 +81,13 @@ namespace PreparationTracker.Controllers
                 var updatedExam = await _examServices.UpdateExam(examId, examRequestDto);
                 return Ok(updatedExam);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, new
+                {
+                    status = "error",
+                    message = e.Message
+                });
             }
         }
 
@@ -81,9 +99,13 @@ namespace PreparationTracker.Controllers
                 await _examServices.DeleteExam(examId);
                 return Ok();
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, new
+                {
+                    status = "error",
+                    message = e.Message
+                });
             }
         }
     }
