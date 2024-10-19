@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace PreparationTracker.Services
 {
@@ -52,6 +53,7 @@ namespace PreparationTracker.Services
         public async Task<IEnumerable<ExamResponseDto>> GetExamsByUserId(Guid userId)
         {
             var exams = await _context.Exam.Where(e => e.UserId == userId).ToListAsync();
+            
             return _mapper.Map<IEnumerable<ExamResponseDto>>(exams);
         }
 

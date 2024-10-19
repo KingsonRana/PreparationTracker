@@ -139,7 +139,10 @@ namespace PreparationTracker.Services
 
         public async Task DeleteUserAsync(Guid userId)
         {
-            var user = await _context.Users.FindAsync(userId);
+            var user = await _context.Users
+                          .Include(u => u.Exams) 
+                          .FirstOrDefaultAsync(u => u.UserId == userId); 
+
             if (user == null)
             {
                 throw new Exception("User not found");
@@ -148,9 +151,14 @@ namespace PreparationTracker.Services
             {
                 _examServices.DeleteExam(exam.ExamId);
             }
-
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex) {
+                throw new Exception("Error occured while removing user");
+            }
         }
 
         private string GenerateToken(User user)

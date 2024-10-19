@@ -64,8 +64,8 @@ namespace PreparationTracker.Controllers
             
         }
 
-        // POST: api/TopicManagement/subtopics/{parentId}/{examId}
-        [HttpPost("{parentId}/{examId}/Subtopics")]
+        // POST: api/TopicManagement/{examId}/{parentId}/subtopics
+        [HttpPost("{examId}/{parentId}/SubTopic")]
         public async Task<ActionResult<TopicResponseDto>> CreateSubTopic(Guid parentId, Guid examId, [FromBody] TopicRequestDto requestDto)
         {
             try
